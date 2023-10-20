@@ -3,15 +3,13 @@ import 'package:get/get.dart';
 import 'package:location/location.dart';
 import 'package:page_state_handler/page_state_handler.dart';
 import 'package:weather_test/data/models/weather_model.dart';
-import 'package:weather_test/data/provider/api_provider.dart';
 import 'package:weather_test/domain/usecases/weather_usecase.dart';
-
 import '../../domain/entities/weather_entity.dart';
+import '../Base/base_controller.dart';
 
-class WeatherController extends GetxController {
+class WeatherController extends GetxController with BaseController {
   final WeatherUseCase _weatherUseCase;
   WeatherController(this._weatherUseCase);
-  final ApiProvider _apiProvider = ApiProvider();
   PageStateController pageStateController = PageStateController();
   Location location = Location();
   bool? _serviceEnabled;
@@ -52,18 +50,20 @@ class WeatherController extends GetxController {
 
   void getWeatherData() async {
     try {
+      pageStateController.onStateUpdate(PageState.loading);
+
       await _weatherUseCase
           .execute(WeatherEntity(
                   lat: _locationData?.latitude.toString(),
                   lng: _locationData?.longitude.toString())
               .toMap())
           .then((value) {
-        print("asdfasdf ${value.timezone}");
+        print("weatherData ${value.timezone}");
         weatherData = value;
         pageStateController.onStateUpdate(PageState.loaded);
       });
     } catch (e) {
-      pageStateController.onError(e.toString());
+      pageStateController.onError(handleError(e, () {}, isBack: false));
     }
   }
 

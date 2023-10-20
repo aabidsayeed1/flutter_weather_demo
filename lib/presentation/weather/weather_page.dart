@@ -21,6 +21,21 @@ class WeatherPage extends GetView<WeatherController> {
             retry: () => Future(
                   () => controller.getWeatherData(),
                 ),
+            loading: Stack(
+              children: [
+                Positioned.fill(
+                  child: WeatherBg(
+                    weatherType: controller.weatherType.value,
+                    width: Get.width,
+                    height: Get.height,
+                  ),
+                ),
+                const Center(
+                    child: CircularProgressIndicator(
+                  color: Colors.white,
+                )),
+              ],
+            ),
             child: Stack(
               children: [
                 Positioned.fill(
